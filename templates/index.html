@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Trip Reservation System {% endblock %}</h1>
+    <form method="post">
+        <label for="option">Welcome to the INFOTC-4320 Reservation System</label>
+        <select id="option" name="option">
+            <option value="">Choose Menu Option</option>
+            <option value="reservations">View Reservations</option>
+            <option value="admin">View Admin Login</option>
+        </select>
+
+        <input type="submit" value="Go To Page">
+    </form>
+{% endblock %}
