@@ -2,12 +2,14 @@
 # Final Project
 
 # Import modules
-from flask import Flask, render_template, request, flash, url_for, redirect
+from flask import Flask, render_template, request, flash, url_for, redirect, session
+import sqlite3
+import os
 
 # ====== Create a flask app object and set app variables ======
 app = Flask(__name__)
 app.config["DEBUG"] = True
-app.config["SECRECT_KEY"] = 'your secret key'
+app.config["SECRET_KEY"] = 'your secret key'
 app.secret_key = 'your secret key'
 
 # ====== Home Routes ======
@@ -36,8 +38,31 @@ def reservations_get():
     return render_template('reservations.html')
 
 # ====== Admin Routes ======
-@app.route('/admin', methods=('GET',))
+@app.route('/admin', methods=('GET','POST'))
 def admin_get():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        #connection to admin database
+        conn = sqlite3.connect('reservations.db')
+        conn.row_factory = sqlite3.Row
+        c = conn.cursor()
+
+        c.execute(
+            "SELECT * FROM admins WHERE username=? AND password=?", (username,password)
+        )
+        admin = c.fetchone()
+        conn.close()
+
+        if admin:
+            session['admin_logged_in'] = True
+            session['admin_username'] = username
+            return redirect(url_for('admin_get'))
+        else:
+            flash("Invalid username or password!")
+        render_template('admin.html')
+            
 
     return render_template('admin.html')
     
