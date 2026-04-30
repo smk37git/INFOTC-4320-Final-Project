@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Administrator Login {% endblock %}</h1>
+
+    {% for seats in plane %}
+
+    {% endfor %}
+
+    <h2 >Reservation List</h2>
+    {% for reserved in reservations %}
+    <p>reservation[reserved]</p>
+    <!-- <a href="{{ url_for('delete_get', ) }}">Delete Reservation</a> -->
+    {% endfor %}
+
+{% endblock %}

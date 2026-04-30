@@ -40,6 +40,20 @@ def reservations_get():
 def admin_get():
 
     return render_template('admin.html')
+
+@app.route('/admin', methods=('POST',))
+def admin_post():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    admin_usr = "asd" #will come from db  
+    admin_pass = 123 #will come from db
+
+    if username == admin_usr and int(password) == admin_pass:
+        return render_template('admin_dashboard.html')
+    else:
+        flash("Invalid username or password!!")
+        return redirect(url_for("admin_get"))
+
     
 # Run the application
 app.run(port=5008, debug=True)
