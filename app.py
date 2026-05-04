@@ -36,10 +36,10 @@ def index_post():
 def reservations_get():
     if request.method == 'GET':
         passengerName = FirstName + LastName
-        FirstName = request.form.get("FirstName")
-        LastName = request.form.get("LastName")
-        seatRows = request.form.get(seatRows)
-        seatColumns = request.form.get(seatColumns)
+        FirstName = request.form.get('FirstName')
+        LastName = request.form.get('LastName')
+        SeatRows = request.form.get('SeatRows')
+        SeatColumns = request.form.get('SeatColumns')
 
         # get info for seat reservations:
         dbconnect = sqlite3.connect('reservations.db')
