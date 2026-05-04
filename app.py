@@ -35,11 +35,21 @@ def index_post():
 @app.route('/reservations', methods=('GET',))
 def reservations_get():
     if request.method == 'GET':
-        FirstName = request.form.get('FirstName')
-        LastName = request.form.get('LastName')
+        passengerName = FirstName + LastName
+        FirstName = request.form.get("FirstName")
+        LastName = request.form.get("LastName")
+        seatRows = request.form.get(seatRows)
+        seatColumns = request.form.get(seatColumns)
 
         # get info for seat reservations:
-        
+        dbconnect = sqlite3.connect('reservations.db')
+        dbconnect.row_factory = sqlite3.Row
+        connection = dbconnect.cursor()
+
+        connection.execute(
+            "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
+        )
+
     return render_template('reservations.html')
 
 # ====== Admin Routes ======
