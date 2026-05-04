@@ -34,7 +34,12 @@ def index_post():
 # ====== Reservation Routes ======
 @app.route('/reservations', methods=('GET',))
 def reservations_get():
+    if request.method == 'GET':
+        FirstName = request.form.get('FirstName')
+        LastName = request.form.get('LastName')
 
+        # get info for seat reservations:
+        
     return render_template('reservations.html')
 
 # ====== Admin Routes ======

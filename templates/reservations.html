@@ -3,4 +3,23 @@
 {% block content %}
     <h1>{% block title %} Reservations {% endblock %}</h1>
 
+    <form method='POST'>
+        <label for "FirstName">First Name</label>
+        <input type="text" id="FirstName" name="FirstName"> <br>
+
+        <label for "LastName"> Last Name</label>
+        <input type="text" id="LastName" name="LastName"><br>
+
+        <label for "seatRows">Select Row: </label>
+        <select id="seatRows" name="SeatRows">
+            <option value="null"></option><br>
+        </select>
+
+        <label for "seatColumns">Select Row: </label>
+        <select id="seatRows" name="SeatColumns">
+            <option value="null"></option><br>
+        </select>
+
+    </form>
+
 {% endblock %}
