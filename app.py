@@ -45,7 +45,7 @@ def admin_get():
         password = request.form.get('password')
 
         #connection to admin database
-        conn = sqlite3.connect('reservations.db')
+        conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
 
@@ -55,30 +55,13 @@ def admin_get():
         admin = c.fetchone()
         conn.close()
 
-        if admin:
+        if admin: 
             session['admin_logged_in'] = True
-            session['admin_username'] = username
             return redirect(url_for('admin_get'))
         else:
-            flash("Invalid username or password!")
-        render_template('admin.html')
-            
+            flash("Invalid username or password!")            
 
     return render_template('admin.html')
-
-@app.route('/admin', methods=('POST',))
-def admin_post():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    admin_usr = "asd" #will come from db  
-    admin_pass = 123 #will come from db
-
-    if username == admin_usr and int(password) == admin_pass:
-        return render_template('admin_dashboard.html')
-    else:
-        flash("Invalid username or password!!")
-        return redirect(url_for("admin_get"))
-
     
 # Run the application
 app.run(port=5008, debug=True)
