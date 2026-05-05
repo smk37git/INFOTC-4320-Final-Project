@@ -6,16 +6,16 @@
 
     {% if session.get('admin_logged_in') %}
         {% include 'admin_dashboard.html' %}
-    {% else %}
-        <form method="POST" class="login-form">
-            <label>Username</label>
-            <input type="text" name="username" required>
-
-            <label>Password</label>
-            <input type="text" name="password" required>
-
-            <button type="submit">Login</button>
-        </form>
     {% endif %}
+
+    <form method="POST" class="login-form">
+        <label>Username</label>
+        <input type="text" name="username" required>
+
+        <label>Password</label>
+        <input type="text" name="password" required>
+
+        <button type="submit">Login</button>
+    </form>
 
 {% endblock %}
