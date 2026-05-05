@@ -72,7 +72,22 @@ def admin_get():
 
         if admin: 
             session['admin_logged_in'] = True
-            return redirect(url_for('admin_get'))
+
+            # Get a db connection and create a cursor
+            mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+            mydb.row_factory = sqlite3.Row
+            cursor = mydb.cursor()
+
+            # Create and execute a query to get all reservations information
+            cursor.execute("SELECT * FROM reservations;")
+
+            # Fetch the results
+            reservations = cursor.fetchall()
+            mydb.close()
+
+            # Reload page with admin information
+            return render_template('admin.html', reservations=reservations)
+            
         else:
             flash("Invalid username or password!")            
 
