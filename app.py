@@ -78,6 +78,7 @@ def delete_reservation(id):
 @app.route('/admin', methods=('GET','POST'))
 def admin_get():
     reservations = []
+    total_sales = 0
 
     if session.get('admin_logged_in'):
         mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
@@ -86,6 +87,14 @@ def admin_get():
         cursor.execute("SELECT * FROM reservations;")
         reservations = cursor.fetchall()
         mydb.close()
+
+        cost_matrix = get_cost_matrix()
+
+        for reservation in reservations:
+            row = int(reservation['seatRow'])
+            col = int(reservation['seatColumn'])
+            total_sales += cost_matrix[row-1][col-1]
+
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -109,7 +118,11 @@ def admin_get():
         else:
             flash("Invalid username or password!")
 
-    return render_template('admin.html', reservations=reservations)
+    return render_template('admin.html', reservations=reservations, total_sales=total_sales)
+
+def get_cost_matrix():
+    cost_matrix = [[100, 75, 50, 100] for row in range(12)]
+    return cost_matrix
     
 # Run the application
 app.run(port=5008, debug=True)
