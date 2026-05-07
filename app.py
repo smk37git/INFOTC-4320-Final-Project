@@ -41,22 +41,22 @@ def reservations_get():
         SeatRow = request.form.get('SeatRows')
         SeatColumn = request.form.get('SeatColumns')
 
-    # Convert to int for seat column and rows
-    try:
-        SeatRow = int(SeatRow)
-        SeatColumn = int(SeatColumn)
-    except(TypeError, ValueError):
-        flash("You must enter a valid value for the row and column fields.")
-        return render_template('reservations.html')
+        # Convert to int for seat column and rows
+        try:
+            SeatRow = int(SeatRow)
+            SeatColumn = int(SeatColumn)
+        except (TypeError, ValueError):
+            flash("You must enter a valid value for the row and column fields.")
+            return render_template('reservations.html')
 
-    # get info for seat reservations:
-    dbconnect = sqlite3.connect('reservations.db')
-    dbconnect.row_factory = sqlite3.Row
-    connection = dbconnect.cursor()
+        # get info for seat reservations:
+        dbconnect = sqlite3.connect('reservations.db')
+        dbconnect.row_factory = sqlite3.Row
+        connection = dbconnect.cursor()
 
-    connection.execute(
-        "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
-        )
+        connection.execute(
+            "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
+            )
 
     return render_template('reservations.html')
 
