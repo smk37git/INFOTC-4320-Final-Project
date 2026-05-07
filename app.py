@@ -86,6 +86,8 @@ def delete_reservation(id):
 @app.route('/admin', methods=('GET','POST'))
 def admin_get():
     reservations = []
+    total_sales = 0
+    seat_matrix = []
 
     if session.get('admin_logged_in'):
         mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
@@ -94,6 +96,18 @@ def admin_get():
         cursor.execute("SELECT * FROM reservations;")
         reservations = cursor.fetchall()
         mydb.close()
+
+        seat_matrix = get_seat_matrix(reservations)
+
+        cost_matrix = get_cost_matrix()
+
+        for reservation in reservations:
+            row = int(reservation['seatRow'])
+            col = int(reservation['seatColumn'])
+
+   
+            total_sales += cost_matrix[row][col]
+
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -117,7 +131,21 @@ def admin_get():
         else:
             flash("Invalid username or password!")
 
-    return render_template('admin.html', reservations=reservations)
+    return render_template('admin.html', reservations=reservations, total_sales=total_sales, seat_matrix=seat_matrix)
+
+def get_cost_matrix():
+    cost_matrix = [[100, 75, 50, 100] for row in range(12)]
+    return cost_matrix
+
+def get_seat_matrix(reservations):
+    seat_matrix = [[0 for _ in range(4)] for _ in range(12)]
+
+    for reservation in reservations:
+        row = int(reservation['seatRow'])
+        col = int(reservation['seatColumn'])
+
+        seat_matrix[row][col] = 1
+    return seat_matrix
     
 # Run the application
 app.run(port=5008, debug=True)
