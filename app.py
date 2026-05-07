@@ -54,11 +54,13 @@ def reservations_get():
         dbconnect.row_factory = sqlite3.Row
         connection = dbconnect.cursor()
 
-        connection.execute(
-            "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
-            )
+    mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+    mydb.row_factory = sqlite3.Row
+    reservations = mydb.cursor().execute('SELECT * FROM reservations;').fetchall()
+    mydb.close()
 
-    return render_template('reservations.html')
+    return render_template('reservations.html', seat_matrix=get_seat_matrix(reservations))
+
 
 @app.route('/admin/<id>/delete/', methods=('POST',))
 def delete_reservation(id):
