@@ -32,22 +32,30 @@ def index_post():
         return redirect(url_for('index_get'))
     
 # ====== Reservation Routes ======
-@app.route('/reservations', methods=('GET',))
+@app.route('/reservations', methods=('GET', 'POST'))
 def reservations_get():
-    if request.method == 'GET':
-        passengerName = FirstName + LastName
-        FirstName = request.form.get('FirstName')
-        LastName = request.form.get('LastName')
-        SeatRows = request.form.get('SeatRows')
-        SeatColumns = request.form.get('SeatColumns')
+    # Get info to make a reservation
+    if request.method == 'POST':
+        FirstName = request.form.get('FirstName', '').strip()
+        LastName = request.form.get('LastName', '').strip()
+        SeatRow = request.form.get('SeatRows')
+        SeatColumn = request.form.get('SeatColumns')
 
-        # get info for seat reservations:
-        dbconnect = sqlite3.connect('reservations.db')
-        dbconnect.row_factory = sqlite3.Row
-        connection = dbconnect.cursor()
+    # Convert to int for seat column and rows
+    try:
+        SeatRow = int(SeatRow)
+        SeatColumn = int(SeatColumn)
+    except(TypeError, ValueError):
+        flash("You must enter a valid value for the row and column fields.")
+        return render_template('reservations.html')
 
-        connection.execute(
-            "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
+    # get info for seat reservations:
+    dbconnect = sqlite3.connect('reservations.db')
+    dbconnect.row_factory = sqlite3.Row
+    connection = dbconnect.cursor()
+
+    connection.execute(
+        "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
         )
 
     return render_template('reservations.html')

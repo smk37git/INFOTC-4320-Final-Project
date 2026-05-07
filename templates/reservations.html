@@ -5,19 +5,36 @@
 
     <form method='POST'>
         <label for "FirstName">First Name</label>
-        <input type="text" id="FirstName" name="FirstName"> <br><br>
+        <input type="text" id="FirstName" name="FirstName" required> <br><br>
 
         <label for "LastName"> Last Name</label>
-        <input type="text" id="LastName" name="LastName"><br><br>
+        <input type="text" id="LastName" name="LastName" required><br><br>
 
         <label for "seatRows">Select Row: </label>
-        <select id="seatRows" name="SeatRows">
-            <option value="null"></option><br><br>
-        </select>
+        <select id="seatRows" name="SeatRows" required>
+            <option value=""></option><br><br>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
 
-        <label for "seatColumns">Select Row: </label>
-        <select id="seatColumns" name="SeatColumns">
-            <option value="null"></option>
+        </select><br><br>
+
+        <label for "seatColumns">Select Column: </label>
+        <select id="seatColumns" name="SeatColumns" required>
+            <option value=""></option><br><br>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
         </select><br><br>
 
         <button type="submit"> Submit Reservation! </button>
