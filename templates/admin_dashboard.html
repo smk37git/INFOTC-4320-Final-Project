@@ -1,16 +1,27 @@
-{% extends 'base.html' %}
-
 {% block content %}
-    <h1>{% block title %} Administrator Login {% endblock %}</h1>
 
-    {% for seats in plane %}
+    <h1>Seating Chart</h1>
+    <div class="post">
+        <p>SEATING MATRIX HERE</p>
+        <!--- SEATING MATRIX HERE -->
+    </div>
 
-    {% endfor %}
+    <h1>Total Sales:</h1>
+    <div class="post">
+        <p>Money</p>
+    </div>
 
-    <h2 >Reservation List</h2>
-    {% for reserved in reservations %}
-    <p>reservation[reserved]</p>
-    <!-- <a href="{{ url_for('delete_get', ) }}">Delete Reservation</a> -->
+    <h1>Reservation List</h1>
+    {% for reservation in reservations %}
+        <div class="post">
+                <p><strong>Name: </strong> {{ reservation['passengerName'] }}</p>
+                <p><strong>Row: </strong> {{ reservation['seatRow'] }}</p>
+                <p><strong>Seat: </strong> {{ reservation['seatColumn'] }}</p>
+                <p><strong>Ticket Confirmation: </strong> {{ reservation['eticketNumber'] }}</p>
+                <form action="{{ url_for('delete_reservation', id=reservation['id']) }}" method="POST" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete this reservation?')">Delete</button>
+                </form>
+        </div>
     {% endfor %}
 
 {% endblock %}

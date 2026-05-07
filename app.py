@@ -60,48 +60,64 @@ def reservations_get():
 
     return render_template('reservations.html')
 
+@app.route('/admin/<id>/delete/', methods=('POST',))
+def delete_reservation(id):
+
+    # Get a db connection and create a cursor
+    mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+    mydb.row_factory = sqlite3.Row
+    cursor = mydb.cursor()
+
+    # Create and execute a query to get all reservations information
+    delete_query = "DELETE FROM reservations WHERE id = ?"
+    cursor.execute(delete_query, (id,))
+    mydb.commit()
+
+    if cursor.rowcount == 0:
+        flash("ERROR: Reservation not found.")
+    else:
+        flash(f"SUCCESS: Reservation {id} deleted.")
+
+    mydb.close()
+
+    return redirect(url_for('admin_get'))
+
 # ====== Admin Routes ======
 @app.route('/admin', methods=('GET','POST'))
 def admin_get():
+    reservations = []
+
+    if session.get('admin_logged_in'):
+        mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+        mydb.row_factory = sqlite3.Row
+        cursor = mydb.cursor()
+        cursor.execute("SELECT * FROM reservations;")
+        reservations = cursor.fetchall()
+        mydb.close()
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
 
-        #connection to admin database
-        conn = sqlite3.connect('reservations.db')
+        conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
         conn.row_factory = sqlite3.Row
         c = conn.cursor()
-
-        c.execute(
-            "SELECT * FROM admins WHERE username=? AND password=?", (username,password)
-        )
+        c.execute("SELECT * FROM admins WHERE username=? AND password=?", (username, password))
         admin = c.fetchone()
         conn.close()
 
         if admin:
             session['admin_logged_in'] = True
-            session['admin_username'] = username
-            return redirect(url_for('admin_get'))
+            mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+            mydb.row_factory = sqlite3.Row
+            cursor = mydb.cursor()
+            cursor.execute("SELECT * FROM reservations;")
+            reservations = cursor.fetchall()
+            mydb.close()
         else:
             flash("Invalid username or password!")
-        render_template('admin.html')
-            
 
-    return render_template('admin.html')
-
-@app.route('/admin', methods=('POST',))
-def admin_post():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    admin_usr = "asd" #will come from db  
-    admin_pass = 123 #will come from db
-
-    if username == admin_usr and int(password) == admin_pass:
-        return render_template('admin_dashboard.html')
-    else:
-        flash("Invalid username or password!!")
-        return redirect(url_for("admin_get"))
-
+    return render_template('admin.html', reservations=reservations)
     
 # Run the application
 app.run(port=5008, debug=True)
