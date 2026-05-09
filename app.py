@@ -129,6 +129,8 @@ def delete_reservation(id):
 # ====== Admin Routes ======
 @app.route('/admin', methods=('GET','POST'))
 def admin_get():
+    total_sales = 0
+    seat_matrix = []
     reservations = []
 
     if session.get('admin_logged_in'):
@@ -138,6 +140,17 @@ def admin_get():
         cursor.execute("SELECT * FROM reservations;")
         reservations = cursor.fetchall()
         mydb.close()
+
+        seat_matrix = get_seat_matrix(reservations)
+        cost_matrix = get_cost_matrix()
+
+        for reservation in reservations:
+            row = int(reservation['seatRow'])
+            col = int(reservation['seatColumn'])
+
+   
+            total_sales += cost_matrix[row][col]
+
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -161,7 +174,7 @@ def admin_get():
         else:
             flash("Invalid username or password!")
 
-    return render_template('admin.html', reservations=reservations)
+    return render_template('admin.html', reservations=reservations, total_sales=total_sales, seat_matrix=seat_matrix)
 
 def generate_eticket(name):
     CourseDept = "INFOTC"
