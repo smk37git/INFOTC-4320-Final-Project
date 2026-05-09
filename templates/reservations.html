@@ -3,6 +3,25 @@
 {% block content %}
     <h1>{% block title %} Reservations {% endblock %}</h1>
 
+    <h1>Seating Chart</h1>
+    <div class="post">
+        <table>
+            {% for row in seat_matrix %}
+                <tr>
+                    {% for seat in row %}
+                        <td>
+                            {% if seat == 1 %}
+                                X
+                            {% else %}
+                                O
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
     <form method='POST'>
         <label for="FirstName">First Name</label>
         <input type="text" id="FirstName" name="FirstName" required> <br><br>
