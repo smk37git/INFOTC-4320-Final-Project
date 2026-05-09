@@ -300,6 +300,20 @@ def admin_get():
 
     return render_template('admin.html', reservations=reservations, total_sales=total_sales, seat_matrix=seat_matrix)
 
+def generate_eticket(name):
+    CourseDept = "INFOTC"
+    CourseNum = "4320"
+    ETicket = ""
+    
+    for i in range(max(len(name), len(CourseDept))):
+        if i < len(name):
+            ETicket += name[i]
+        if i < len(CourseNum):
+            ETicket += CourseNum[i]
+    
+    ETicket += CourseNum
+    return ETicket
+
 def get_cost_matrix():
     cost_matrix = [[100, 75, 50, 100] for row in range(12)]
     return cost_matrix

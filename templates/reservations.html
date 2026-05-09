@@ -1,6 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <style>
+        .alert.flash-success {
+            color: #008000
+            background: # FFFFFF
+
+        }
+    </style>
+    <script>
+        document.querySelectorAll('.alert').forEach(function (message) {
+            if (message.textConetent.trim().toUpperCase().startsWith('SUCCESS')) {
+                message.classList.add('flash-success')
+            }
+        });
+    <script>
+    
+
     <h1>{% block title %} Reservations {% endblock %}</h1>
 
     <h1>Seating Chart</h1>
