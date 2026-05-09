@@ -75,7 +75,7 @@ def reservations_get():
         
         # Insert info for seat reservations:
         PassengerName = f"{FirstName} {LastName}"
-        ETicket = get_eticket(FirstName)
+        ETicket = generate_eticket(FirstName)
         
         dbconnect = sqlite3.connect(os.path.join(os.path.dirname(__file__),'reservations.db'))
         dbconnect.row_factory = sqlite3.Row

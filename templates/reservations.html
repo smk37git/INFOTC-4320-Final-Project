@@ -1,51 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <style>
-        .alert.flash-success {
-            color: #008000
-            background: # FFFFFF
-
-        }
-    </style>
-    <script>
-        document.querySelectorAll('.alert').forEach(function (message) {
-            if (message.textConetent.trim().toUpperCase().startsWith('SUCCESS')) {
-                message.classList.add('flash-success')
-            }
-        });
-    <script>
-    
-
     <h1>{% block title %} Reservations {% endblock %}</h1>
 
-    <h1>Seating Chart</h1>
-    <div class="post">
-        <table>
-            {% for row in seat_matrix %}
-                <tr>
-                    {% for seat in row %}
-                        <td>
-                            {% if seat == 1 %}
-                                X
-                            {% else %}
-                                O
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
-
     <form method='POST'>
-        <label for="FirstName">First Name</label>
+        <label for "FirstName">First Name</label>
         <input type="text" id="FirstName" name="FirstName" required> <br><br>
 
-        <label for="LastName"> Last Name</label>
+        <label for "LastName"> Last Name</label>
         <input type="text" id="LastName" name="LastName" required><br><br>
 
-        <label for="seatRows">Select Row: </label>
+        <label for "seatRows">Select Row: </label>
         <select id="seatRows" name="SeatRows" required>
             <option value=""></option><br><br>
             <option value="1">1</option>
@@ -63,7 +28,7 @@
 
         </select><br><br>
 
-        <label for="seatColumns">Select Column: </label>
+        <label for "seatColumns">Select Column: </label>
         <select id="seatColumns" name="SeatColumns" required>
             <option value=""></option><br><br>
             <option value="1">1</option>
