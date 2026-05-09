@@ -84,7 +84,7 @@ def reservations_get():
         connection = dbconnect.cursor()
 
         connection.execute(
-            "INSERT INTO reservations (passengerName, seatRows, seatColumns, eTicketNumber)"
+            "INSERT INTO reservations (passengerName, seatRow, seatColumn, eTicketNumber)"
             "VALUES (?, ?, ?, ?)",
             (PassengerName, SeatRow, SeatColumn, ETicket)
             )
