@@ -49,8 +49,19 @@ def reservations_get():
         flash("You must enter a valid value for the row and column fields.")
         return render_template('reservations.html')
 
+    # Ensure that the seat rows and columns are valid
+    
+    if SeatRow < 0 or SeatRow > 11:
+        flash("ERROR: You must enter a valid row.")
+        return redirect(url_for('reservations_get'))
+    
+    if SeatColumn < 0 or SeatColumn > 3:
+        flash("ERROR: Seat column must be valid.")
+        return redirect(url_for('reservations_get'))
+    
+    
     # get info for seat reservations:
-    dbconnect = sqlite3.connect('reservations.db')
+    dbconnect = sqlite3.connect(os.path.join(os.path.dirname(__file__),'reservations.db'))
     dbconnect.row_factory = sqlite3.Row
     connection = dbconnect.cursor()
 
@@ -58,6 +69,8 @@ def reservations_get():
         "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
         )
 
+    # 
+    
     return render_template('reservations.html')
 
 @app.route('/admin/<id>/delete/', methods=('POST',))
