@@ -49,7 +49,9 @@ def reservations_get():
             flash("You must enter a valid value for the row and column fields.")
             return render_template('reservations.html')
 
-        # Ensure that the seat rows and columns are valid
+        # Ensure that the seat rows and columns are valid and db friendly
+        SeatRow = SeatRow - 1
+        SeatColumn = SeatColumn - 1
         
         if SeatRow < 0 or SeatRow > 11:
             flash("ERROR: You must enter a valid row.")
@@ -82,7 +84,7 @@ def reservations_get():
         connection = dbconnect.cursor()
 
         connection.execute(
-            "INSERT INTO reservations (passengerName, seatRows, seatColumns, eTicketNumber"
+            "INSERT INTO reservations (passengerName, seatRows, seatColumns, eTicketNumber)"
             "VALUES (?, ?, ?, ?)",
             (PassengerName, SeatRow, SeatColumn, ETicket)
             )
@@ -100,7 +102,7 @@ def reservations_get():
     dbconnect.close()
     
     
-    return render_template('reservations.html', SeatMatrix = get_seat_matrix(reservations))
+    return render_template('reservations.html', seat_matrix = get_seat_matrix(reservations))
 
 @app.route('/admin/<id>/delete/', methods=('POST',))
 def delete_reservation(id):
@@ -169,8 +171,8 @@ def generate_eticket(name):
     for i in range(max(len(name), len(CourseDept))):
         if i < len(name):
             ETicket += name[i]
-        if i < len(CourseNum):
-            ETicket += CourseNum[i]
+        if i < len(CourseDept):
+            ETicket += CourseDept[i]
     
     ETicket += CourseNum
     return ETicket
