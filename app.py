@@ -32,25 +32,77 @@ def index_post():
         return redirect(url_for('index_get'))
     
 # ====== Reservation Routes ======
-@app.route('/reservations', methods=('GET',))
+@app.route('/reservations', methods=('GET', 'POST'))
 def reservations_get():
-    if request.method == 'GET':
-        passengerName = FirstName + LastName
-        FirstName = request.form.get('FirstName')
-        LastName = request.form.get('LastName')
-        SeatRows = request.form.get('SeatRows')
-        SeatColumns = request.form.get('SeatColumns')
+    # Get info to make a reservation
+    if request.method == 'POST':
+        FirstName = request.form.get('FirstName', '').strip()
+        LastName = request.form.get('LastName', '').strip()
+        SeatRow = request.form.get('SeatRows')
+        SeatColumn = request.form.get('SeatColumns')
 
-        # get info for seat reservations:
-        dbconnect = sqlite3.connect('reservations.db')
+    # Convert to int for seat column and rows
+        try:
+            SeatRow = int(SeatRow)
+            SeatColumn = int(SeatColumn)
+        except(TypeError, ValueError):
+            flash("You must enter a valid value for the row and column fields.")
+            return render_template('reservations.html')
+
+        # Ensure that the seat rows and columns are valid and db friendly
+        SeatRow = SeatRow - 1
+        SeatColumn = SeatColumn - 1
+        
+        if SeatRow < 0 or SeatRow > 11:
+            flash("ERROR: You must enter a valid row.")
+            return redirect(url_for('reservations_get'))
+        
+        if SeatColumn < 0 or SeatColumn > 3:
+            flash("ERROR: Seat column must be valid.")
+            return redirect(url_for('reservations_get'))
+        
+        #Establish a database connection
+        dbconnect = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+        dbconnect.row_factory = sqlite3.Row
+        cursor = dbconnect.cursor()
+        
+        # Ensure the seat is not already taken.
+        cursor.execute("SELECT id FROM reservations WHERE seatRow = ? and seatColumn = ?", (SeatRow, SeatColumn))
+        DoesExist = cursor.fetchone()
+        
+        if DoesExist is not None:
+            dbconnect.close()
+            flash("ERROR: Row and column already taken")
+            return redirect(url_for('reservations_get'))
+        
+        # Insert info for seat reservations:
+        PassengerName = f"{FirstName} {LastName}"
+        ETicket = generate_eticket(FirstName)
+        
+        dbconnect = sqlite3.connect(os.path.join(os.path.dirname(__file__),'reservations.db'))
         dbconnect.row_factory = sqlite3.Row
         connection = dbconnect.cursor()
 
         connection.execute(
-            "SELECT * FROM reservations WHERE passengerName=? AND seatRows=? AND seatColumns=? AND eTicketNumber=? AND created=? "
-        )
+            "INSERT INTO reservations (passengerName, seatRows, seatColumns, eTicketNumber)"
+            "VALUES (?, ?, ?, ?)",
+            (PassengerName, SeatRow, SeatColumn, ETicket)
+            )
 
-    return render_template('reservations.html')
+        dbconnect.commit()
+        dbconnect.close()
+        
+        flash(f"Your reservation has been completed for {PassengerName}, your e-ticket number is {ETicket}")
+        return redirect(url_for('reservations_get'))
+    
+    # Get the reservations from the database
+    dbconnect = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
+    dbconnect.row_factory = sqlite3.Row
+    reservations = dbconnect.cursor().execute('SELECT * FROM reservations;'). fetchall()
+    dbconnect.close()
+    
+    
+    return render_template('reservations.html', seat_matrix = get_seat_matrix(reservations))
 
 @app.route('/admin/<id>/delete/', methods=('POST',))
 def delete_reservation(id):
@@ -78,8 +130,6 @@ def delete_reservation(id):
 @app.route('/admin', methods=('GET','POST'))
 def admin_get():
     reservations = []
-    total_sales = 0
-    seat_matrix = []
 
     if session.get('admin_logged_in'):
         mydb = sqlite3.connect(os.path.join(os.path.dirname(__file__), "reservations.db"))
@@ -88,18 +138,6 @@ def admin_get():
         cursor.execute("SELECT * FROM reservations;")
         reservations = cursor.fetchall()
         mydb.close()
-
-        seat_matrix = get_seat_matrix(reservations)
-
-        cost_matrix = get_cost_matrix()
-
-        for reservation in reservations:
-            row = int(reservation['seatRow'])
-            col = int(reservation['seatColumn'])
-
-   
-            total_sales += cost_matrix[row][col]
-
 
     if request.method == 'POST':
         username = request.form.get('username')
@@ -123,7 +161,21 @@ def admin_get():
         else:
             flash("Invalid username or password!")
 
-    return render_template('admin.html', reservations=reservations, total_sales=total_sales, seat_matrix=seat_matrix)
+    return render_template('admin.html', reservations=reservations)
+
+def generate_eticket(name):
+    CourseDept = "INFOTC"
+    CourseNum = "4320"
+    ETicket = ""
+    
+    for i in range(max(len(name), len(CourseDept))):
+        if i < len(name):
+            ETicket += name[i]
+        if i < len(CourseDept):
+            ETicket += CourseDept[i]
+    
+    ETicket += CourseNum
+    return ETicket
 
 def get_cost_matrix():
     cost_matrix = [[100, 75, 50, 100] for row in range(12)]
